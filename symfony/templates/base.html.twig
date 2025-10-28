@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+            <!-- Bootstrap CSS -->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <!-- Bootstrap Icons -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+            <!-- Custom styles -->
+            <style>
+                .sidebar {
+                    min-height: calc(100vh - 56px);
+                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+                }
+                .nav-link.active {
+                    background-color: #f8f9fa;
+                    font-weight: 500;
+                }
+                .main-content {
+                    padding: 20px;
+                }
+                @media (max-width: 767.98px) {
+                    .sidebar {
+                        min-height: auto;
+                    }
+                }
+                .login-container {
+                    width: 100%;
+                    max-width: 600px; /* Increased from 450px */
+                    margin: 0 auto;
+                    padding: 40px 20px;
+                }
+                .login-card {
+                    width: 100%;
+                    border-radius: 10px;
+                    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+                }
+                .login-header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                }
+                .full-height {
+                    min-height: calc(100vh - 56px);
+                    display: flex;
+                    align-items: center;
+                }
+                /* Increased form element sizes */
+                .login-card .form-control {
+                    width: 100%;
+                    padding: 12px; /* Larger input padding */
+                    font-size: 1.1rem; /* Larger font size */
+                    margin-bottom: 20px; /* More space between inputs */
+                }
+                .login-card label {
+                    font-size: 1.1rem;
+                    margin-bottom: 8px;
+                    display: block;
+                }
+                .login-card .btn {
+                    padding: 12px 20px;
+                    font-size: 1.1rem;
+                    margin-top: 10px;
+                    width: 100%;
+                }
+                .login-card h1 {
+                    font-size: 1.75rem;
+                    margin-bottom: 25px;
+                }
+            </style>
+        {% endblock %}
+
+        {% block javascripts %}
+            <!-- Bootstrap JS Bundle with Popper -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body>
+        <!-- Top Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ path('app_home') }}">Admin Panel</a>
+                {% if app.user %}
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link {% if app.request.get('_route') starts with 'app_home' %}active{% endif %}" href="{{ path('app_home') }}">Dashboard</a>
+                            </li>
+                        </ul>
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{ app.user.username }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    {# <li><a class="dropdown-item" href="{{ path('app_admin_profile') }}">Profile</a></li>
+                                    <li><a class="dropdown-item" href="{{ path('app_admin_settings') }}">Settings</a></li>
+                                    <li><hr class="dropdown-divider"></li> #}
+                                    <li><a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row">
+                {% if app.user %}
+                    <!-- Sidebar Navigation - Only shown when user is logged in -->
+                    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" id="sidebarMenu">
+                        <div class="position-sticky pt-3">
+                            <ul class="nav flex-column">
+                                {# <li class="nav-item">
+                                    <a class="nav-link {% if app.request.get('_route') starts with 'app_admin_dashboard' %}active{% endif %}" href="{{ path('app_admin_dashboard') }}">
+                                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                                    </a>
+                                </li> #}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if app.request.get('_route') starts with 'app_user_index' %}active{% endif %}" href="{{ path('app_user_index') }}">
+                                        <i class="bi bi-people me-2"></i>Users
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if app.request.get('_route') starts with 'app_expense_index' %}active{% endif %}" href="{{ path('app_expense_index') }}">
+                                        <i class="bi bi-currency-euro"></i>Expenses
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if app.request.get('_route') starts with 'app_expense_category_index' %}active{% endif %}" href="{{ path('app_expense_category_index') }}">
+                                        <i class="bi bi-bookmark"></i>Expense Categories
+                                    </a>
+                                </li>
+                                {# <li class="nav-item">
+                                    <a class="nav-link {% if app.request.get('_route') starts with 'app_admin_categories' %}active{% endif %}" href="{{ path('app_admin_categories') }}">
+                                        <i class="bi bi-tags me-2"></i>Categories
+                                    </a>
+                                </li> #}
+                                {# <li class="nav-item">
+                                    <a class="nav-link {% if app.request.get('_route') starts with 'app_admin_settings' %}active{% endif %}" href="{{ path('app_admin_settings') }}">
+                                        <i class="bi bi-gear me-2"></i>Settings
+                                    </a>
+                                </li> #}
+                            </ul>
+
+                            {# <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                                <span>Reports</span>
+                            </h6>
+                            <ul class="nav flex-column mb-2">
+                                <li class="nav-item">
+                                    <a class="nav-link {% if app.request.get('_route') starts with 'app_admin_reports_sales' %}active{% endif %}" href="{{ path('app_admin_reports_sales') }}">
+                                        <i class="bi bi-file-earmark-text me-2"></i>Sales
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if app.request.get('_route') starts with 'app_admin_reports_analytics' %}active{% endif %}" href="{{ path('app_admin_reports_analytics') }}">
+                                        <i class="bi bi-graph-up me-2"></i>Analytics
+                                    </a>
+                                </li>
+                            </ul> #}
+                        </div>
+                    </div>
+                    
+                    <!-- Main Content when logged in -->
+                    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                        {% block body %}{% endblock %}
+                    </main>
+                {% else %}
+                    <!-- Full width content for login page -->
+                    <main class="col-12 full-height">
+                        <div class="login-container">
+                            <div class="login-header">
+                                <h2>Admin Panel</h2>
+                            </div>
+                            <div class="card login-card">
+                                <div class="card-body p-5">
+                                    {% block login_body %}{% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                {% endif %}
+            </div>
+        </div>
+    </body>
+</html>
