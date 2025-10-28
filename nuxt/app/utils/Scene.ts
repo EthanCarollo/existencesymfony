@@ -5,9 +5,9 @@ import { GridManager } from "./GridManager"
 
 export default class Scene {
     private scene: THREE.Scene
-    private cameraController: CameraController
-    private rendererManager: RendererManager
-    private gridManager: GridManager
+    private cameraController: CameraController | null = null
+    private rendererManager: RendererManager | null = null
+    private gridManager: GridManager | null = null
     private animationId: number | null = null
 
     constructor() {
@@ -28,7 +28,7 @@ export default class Scene {
         this.scene.add(this.gridManager.getHighlightMesh())
         this.scene.add(this.gridManager.getIntersectionPlane()) // Added intersection plane to scene
 
-        this.gridManager.setupMouseTracking(sceneContainer, this.cameraController.camera) // Removed scene parameter
+        this.gridManager.setupMouseTracking(sceneContainer, this.cameraController?.camera) // Removed scene parameter
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
         this.scene.add(ambientLight)
@@ -44,25 +44,25 @@ export default class Scene {
     private animate = () => {
         this.animationId = requestAnimationFrame(this.animate)
 
-        this.cameraController.update()
+        this.cameraController?.update()
 
-        this.rendererManager.render(this.scene, this.cameraController.camera)
+        this.rendererManager?.render(this.scene, this.cameraController!.camera)
     }
 
     private onResize(container: HTMLElement) {
         const width = container.clientWidth
         const height = container.clientHeight
 
-        this.cameraController.onResize(width, height)
-        this.rendererManager.onResize()
+        this.cameraController?.onResize(width, height)
+        this.rendererManager?.onResize()
     }
 
     public destroy() {
         if (this.animationId) cancelAnimationFrame(this.animationId)
 
-        this.cameraController.destroy()
-        this.rendererManager.destroy()
-        this.gridManager.destroy()
-        window.removeEventListener("resize", this.onResize)
+        this.cameraController?.destroy()
+        this.rendererManager?.destroy()
+        this.gridManager?.destroy()
+        // window.removeEventListener("resize", this.onResize)
     }
 }
