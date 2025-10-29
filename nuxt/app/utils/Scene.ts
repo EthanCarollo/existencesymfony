@@ -5,12 +5,16 @@ import { GridManager } from "./GridManager"
 import { BuildManager } from "./BuildManager"
 
 export default class Scene {
-    private scene: THREE.Scene
-    private cameraController: CameraController | null = null
-    private rendererManager: RendererManager | null = null
-    private gridManager: GridManager | null = null
-    private buildManager: BuildManager | null = null
-    private animationId: number | null = null
+    public static instance: Scene
+
+    public scene: THREE.Scene
+    public sceneContainer: HTMLElement | null = null
+    public cameraController: CameraController | null = null
+    public rendererManager: RendererManager | null = null
+    public gridManager: GridManager | null = null
+    public buildManager: BuildManager | null = null
+    public modelLoader: ModelLoader | null = null
+    public animationId: number | null = null
 
     constructor() {
         this.scene = new THREE.Scene()
@@ -18,14 +22,21 @@ export default class Scene {
         this.scene.fog = new THREE.Fog(0xf5f5f5, 10, 50)
     }
 
-    public mounted(sceneContainer: HTMLElement, grid: any, buildings: any) {
+    static getInstance() {
+        if (!Scene.instance) Scene.instance = new Scene()
+        return Scene.instance
+    }
+
+    public mounted(sceneContainer: HTMLElement, grid: any, buildings: any, modelLoader: ModelLoader) {
         const width = sceneContainer.clientWidth
         const height = sceneContainer.clientHeight
 
+        this.modelLoader = modelLoader
+        this.sceneContainer = sceneContainer
         this.rendererManager = new RendererManager(sceneContainer)
         this.cameraController = new CameraController(width, height, this.rendererManager.renderer)
         this.gridManager = new GridManager(grid.size, grid.size)
-        this.buildManager = new BuildManager(this.gridManager)
+        this.buildManager = new BuildManager(this.gridManager, this.modelLoader, this.cameraController, this)
         this.scene.add(this.gridManager.getGridHelper())
         this.scene.add(this.gridManager.getHighlightMesh())
         this.scene.add(this.gridManager.getIntersectionPlane()) // Added intersection plane to scene
@@ -47,6 +58,7 @@ export default class Scene {
         this.animationId = requestAnimationFrame(this.animate)
 
         this.cameraController?.update()
+        this.buildManager?.update()
 
         this.rendererManager?.render(this.scene, this.cameraController!.camera)
     }

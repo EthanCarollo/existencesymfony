@@ -22,18 +22,28 @@ definePageMeta({
 })
 
 const sceneContainer = ref(null)
-let scene = new Scene()
+let scene = Scene.getInstance()
 
 onMounted(async () => {
     let gridResponse = await fetchGrid(token.value)
     let buildingsResponse = await fetchBuildings(token.value)
 
     var modelToLoad = buildingsResponse.buildings.map(building => {
-        return { url: useRuntimeConfig().public.backUrl + '/api' + building.model, key: building.model}
+        return {
+            url: useRuntimeConfig().public.backUrl + '/api' + building.model,
+            key: building.model,
+            width: building.width,
+            length: building.length,
+            height: building.height,
+        }
     })
-    modelLoader.loadModels(modelToLoad)
+    await modelLoader.loadModels(modelToLoad)
 
-    scene.mounted(sceneContainer.value, gridResponse.grid, buildingsResponse.buildings)
+    scene.mounted(sceneContainer.value,
+        gridResponse.grid,
+        buildingsResponse.buildings,
+        modelLoader
+    )
 })
 </script>
 

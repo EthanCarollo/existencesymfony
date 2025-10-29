@@ -31,23 +31,29 @@ Un composant Vue (ou Nuxt) sera intégré dans Symfony pour gérer les interface
 * Mettre en place la structure de base du composant chat.
 
 ### Phase 2 - Mise en place de l’authentification
-
 * Créer le formulaire d’authentification côté front-end (login, signup, logout).
 * Connecter les formulaires à Symfony Security via API.
 * Gérer les sessions et les tokens JWT si nécessaire.
 * Implémenter la validation côté front et côté back.
 * Tester les flux d’authentification pour s’assurer que l’accès à la simulation est sécurisé.
+* Controle de regle de validation coté register
 
 ### Phase 3 - Mise en place de la simulation
 
-* Pouvoir mettre en place des batiments
-* Pouvoir assigner des personnages dans ces batiments
-* Création de personnages
-* Mise en place de symfony AI
-* Définir des intéractions entre personnages
-* Implémenter une logique de base de la simulation
+#### 3.1 - Mise en place du système de build
+* Pouvoir construire des batiments
+* Ne pas pouvoir en mettre 2 sur les memes cases
 
-### Phase 4 – Création de personnages à partir de prompts
+#### 3.2 - Mettre en place du système d'IA
+* A la création d'un batiment, auto attribué un personnage
+* Pouvoir assigner des personnages dans ces batiments
+* Mise en place de symfony AI
+* Pouvoir parler avec une IA
+
+#### 3.3 - Faire les IA se parler entre elle
+* Définir des intéractions entre personnages
+
+### Phase 4 – Création de personnages à partir de prompts || Bonus
 
 * Définir un format de prompt pour générer un personnage avec un caractère précis.
 * Intégrer le LLM pour analyser le prompt et générer les caractéristiques du personnage.
@@ -55,8 +61,3 @@ Un composant Vue (ou Nuxt) sera intégré dans Symfony pour gérer les interface
 * Tester la génération de personnages et leur intégration dans la simulation.
 * Prévoir la possibilité de modifier ou d’éditer manuellement les caractéristiques du personnage après génération.
 
-## Schéma DB
-
-```mermaid 
-
-```

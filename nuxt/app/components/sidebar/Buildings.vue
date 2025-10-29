@@ -6,16 +6,12 @@
         </div>
 
         <!-- List -->
-        <div
-            class="flex-1 overflow-y-auto"
-            @dragover.prevent="onDragOver"
-            @drop="onDrop"
-        >
+        <div class="flex-1 overflow-y-auto">
             <div
                 v-for="building in buildings"
                 :key="building.id"
-                draggable="true"
-                @dragstart="onDragStart(building)"
+                @mousedown.prevent="onDragStart(building, $event)"
+                @mouseup="onDragEnd(building, $event)"
                 @click="handleBuild(building)"
                 class="flex flex-col items-center gap-3 p-3 border-b border-gray-100 transition-colors cursor-pointer hover:bg-gray-50"
             >
@@ -37,9 +33,8 @@
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"/>
                 </svg>
-                {{ building.width }} × {{ building.height }}
+                {{ building.width }} × {{ building.length }}
               </span>
-                            <span>ID: {{ building.id }}</span>
                         </div>
                     </div>
                 </div>
@@ -49,25 +44,44 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
 const { buildings } = useBuildings()
+let scene = Scene.getInstance()
+
+const dragging = ref(false)
+const currentBuilding = ref(null)
 
 const handleBuild = (building) => {
     console.log('Building clicked:', building)
 }
 
-const onDragStart = (building) => (event) => {
+const onDragStart = (building, event) => {
+    dragging.value = true
+    currentBuilding.value = building
     console.log('Drag started:', building)
-    event.dataTransfer.effectAllowed = 'move'
-    event.dataTransfer.setData('building-id', building.id)
+    scene.buildManager.setSelectedObject(building.model)
+
+    // Écoute globale pour détecter le relâché de la souris
+    window.addEventListener('mousemove', onDragMove)
+    window.addEventListener('mouseup', onDragEnd)
 }
 
-const onDragOver = (event) => {
-    event.preventDefault()
-    event.dataTransfer.dropEffect = 'move'
+const onDragMove = (event) => {
+    if (!dragging.value || !currentBuilding.value) return
+    // Ici tu peux déplacer ton objet dans la scène si tu veux
+    // ex: scene.buildManager.moveSelectedObject(event.clientX, event.clientY)
 }
 
-const onDrop = (event) => {
-    const id = event.dataTransfer.getData('building-id')
-    console.log('Building dropped:', id)
+const onDragEnd = (event) => {
+    if (!dragging.value) return
+    console.log('Drag ended:', currentBuilding.value)
+    scene.buildManager.resetSelectedObject()
+    dragging.value = false
+    currentBuilding.value = null
+
+    window.removeEventListener('mousemove', onDragMove)
+    window.removeEventListener('mouseup', onDragEnd)
 }
 </script>
+

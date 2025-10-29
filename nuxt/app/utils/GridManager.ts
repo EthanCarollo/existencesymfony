@@ -156,6 +156,33 @@ export class GridManager {
         }
     }
 
+    public getMouseGridPosition(event: MouseEvent, container: HTMLElement, camera: THREE.Camera): GridPosition | null {
+        const rect = container.getBoundingClientRect()
+
+        // Convert mouse position to normalized device coordinates (-1 to +1)
+        const mouse = new THREE.Vector2()
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+        // Set raycaster from camera
+        this.raycaster.setFromCamera(mouse, camera)
+
+        // Intersect with the invisible ground plane
+        const intersects = this.raycaster.intersectObject(this.intersectionPlane)
+
+        if (intersects.length > 0) {
+            const point = intersects[0].point
+
+            const gridX = Math.floor(point.x / this.cellSize)
+            const gridZ = Math.floor(point.z / this.cellSize)
+
+            return { x: gridX, z: gridZ }
+        }
+
+        return null
+    }
+
+
     public destroy() {
         this.tiles.forEach((tile) => {
             tile.geometry.dispose()
