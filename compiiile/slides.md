@@ -18,7 +18,7 @@ Une API REST est une interface qui permet à des applications de communiquer sur
 
 ---
 
-###### Niveau -1
+###### Niveau 0
 #### Api Platform
 ## C'est quoi API Platform ?
 
@@ -28,7 +28,7 @@ Api Platform est un framework conçu pour créer des API REST, construit au dess
 
 ---
 
-###### Niveau -1
+###### Niveau 0
 #### Api Platform
 ## Philosophie
 
@@ -44,7 +44,7 @@ Api Platform est un framework conçu pour créer des API REST, construit au dess
 #### Api Platform
 ## Qu'est ce que ça fait concrètement ?
 
-Api Platform permet d’exposer des entités via une API publique et de générer une documentation Swagger en quelques minutes.
+Api Platform permet d’exposer des entités via une API publique et de générer une documentation "Swagger" en quelques minutes.
 
 ![image|400vh|no-margin](image.png)
 
@@ -66,7 +66,7 @@ composer require api
 
 ###### Niveau 0
 ##### Api Platform
-## Comment on le fait concrètement ?
+## Comment on l'utilise ?
 
 Il suffit d'un simple changement sur une entité pour la rendre publique dans l'api.
 
@@ -142,9 +142,34 @@ class User{
 
 ###### Niveau 1
 #### Api Platform
+## Paramétrer les opérations possibles.
+
+Il est possible de paramétrer les opérations qu'on souhaite pouvoir réaliser depuis l'API.
+
+```php
+#[ORM\Entity(...)]
+#[ApiResource(operations: [
+    new Get(
+        uriTemplate: '/user/{email}', 
+        uriVariables: ['email' => 'email'],
+        # Permet de mapper l'opération get à la propriété email de l'entité
+    )
+    ])] 
+class User{
+    public ?string $email = null;
+    ...
+}
+```
+
+--- 
+
+###### Niveau 1
+#### Api Platform
 ## Custom Controller - Explication
 
 Il est possible aussi d'insérer un controller custom pour modifier le comportement d'une opération.
+
+<a href="https://api-platform.com/docs/symfony/controllers/" style="font-size:16px; margin-top:8px;">sources<a>
 
 --- 
 
@@ -154,7 +179,6 @@ Il est possible aussi d'insérer un controller custom pour modifier le comportem
 <div style="font-size:32px">
 
 ```php
-
 #[AsController]
 class RegisterController extends AbstractController
 {
@@ -175,29 +199,6 @@ class User {
 
 </div>
 
---- 
-
-###### Niveau 1
-#### Api Platform
-## Paramétrer les opérations possibles.
-
-Il est possible de paramétrer les opérations qu'on souhaite pouvoir réaliser depuis l'API.
-
-```php
-#[ORM\Entity(...)]
-#[ApiResource(operations: [
-    new Get(
-        uriTemplate: '/user/{email}', 
-        uriVariables: ['email' => 'email'],
-        # Permet de mapper l'opération get à la propriété email de l'entité
-    )
-    ])] 
-class User{
-    public ?string $email = null;
-    ...
-}
-```
-
 ---
 
 ###### Niveau 2
@@ -207,6 +208,8 @@ class User{
 Un Data Provider est un service qui récupère les données pour une ressource donnée lorsqu’une requête API est faite.
 
 > Il peut être particulièrement utile dans le cas où on veut récuperer des données en fonction d'un utilisateur
+
+<a href="https://api-platform.com/docs/v2.6/core/data-providers/" style="font-size:16px; margin-top:8px;">sources<a>
 
 ---
 
@@ -236,34 +239,159 @@ class Book {
 ```
 
 --- 
-#### Serializer
-## Qu'est ce que c'est que la Serialization ?
+
+###### Niveau 2
+#### Api Platform
+## Entités et DTO - Explication
+
+Exposer votre Entité Doctrine (l'objet lié à la BDD) est rapide, mais risqué. Dans certains cas, on peut accidentellement exposer au public le mot de passe si on configure mal nos `groups` (*sujet qu'on abordera juste après*).
+
+```php
+// src/Entity/User.php
+#[ORM\Entity]
+#[ApiResource] # <-- L'exposer de cette manière
+class User{
+    private ?string $password;
+    public string $email;
+    ...
+}
+```
+
+<a href="https://api-platform.com/docs/core/dto/" style="font-size:16px; margin-top:8px;">sources</a>
+
+--- 
+
+
+###### Niveau 2
+#### Api Platform
+## Entités et DTO - Exemple
+
+La meilleure pratique est d'utiliser un DTO (Data Transfer Object). C'est un simple objet PHP qui sert de "façade" ou de "masque" public. *Ainsi, il est impossible de fuiter $password ou $balance.*
+
+```php
+// src/ApiResource/UserResource.php
+#[ApiResource(
+    stateOptions: new Options(
+        entityClass: User::class
+    )
+)]
+class UserResource{
+    public string $email;
+}
+```
+
+--- 
+
+###### Niveau 3
+#### Api Platform - Serializer
+## Qu'est ce que c'est que la Serialisation ?
+
+Le Serializer est un composant Symfony qui transforme des données dans les deux sens.
 
 * Sérialisation = transformer un objet PHP en format que l’ordinateur peut envoyer ou stocker, comme JSON ou XML.
 
 * Désérialisation = l’inverse : transformer des données reçues (JSON, XML…) en objet PHP.
 
+<a href="https://api-platform.com/docs/core/serialization/" style="font-size:16px; margin-top:8px;">sources</a>
+
 --- 
 
-#### Serializer
-## Api Platform et Serialization
+###### Niveau 3
+#### Api Platform - Serializer
+## Api Platform et Serialisation
 
-Comprendre le flow de serialization avant de comprendre comment API Platform l'utilise
+Comprendre le flow de serialisation avant de comprendre comment API Platform l'utilise
 
 ![image|300px|no-margin](mermaid.png)
 
 --- 
-#### Serializer
-## Api Platform et Serialization
+
+###### Niveau 3
+#### Api Platform - Serializer
+## Api Platform et Serialisation
 
 API Platform s’appuie sur le Symfony Serializer pour :
 
-* Transformer les entités (objets) en format standardisé quand on fait une requête de récupération (-> normalization).
-* Transformer le JSON reçu en objet quand on fait une requête de modification (-> denormalization). 
+1. La normalization
+* Transformer les entités (objets) en format standardisé quand on fait une requête de récupération.
+2. La denormalization
+* Transformer le JSON reçu en objet quand on fait une requête de modification. 
+
+---
+
+###### Niveau 3
+#### Serializer
+## `normalizationContext` - Exemple
+
+```php
+#[ApiResource( operations: [
+        new Get(
+            # On ne montre que les champs tagués "user:read"
+            normalizationContext: [ 'groups' => 'user:read' ]
+        ),
+        new Get(
+            uriTemplate: '/users/me',
+            # On montre "user:read" ET "user:read:self"
+            normalizationContext: [ 'groups' => ['user:read', 'user:read:self']]
+        )])]
+class User {
+    # -> `GET /api/users/{id}` & `GET /api/users/me` renverra cette propriété
+    #[Groups(['user:read'])] 
+    private string $email; 
+    # -> `GET /api/users/me` renverra cette propriété
+    #[Groups(['user:read:self'])] 
+    private float $balance; 
+}
+```
+
+
+---
+
+###### Niveau 3
+#### Serializer
+## `denormalizationContext` - Exemple 1/2
+
+```php
+#[ApiResource(operations: [
+        new Post(
+            // N'accepte que les champs tagués "user:write"
+            denormalizationContext: [
+                'groups' => 'user:write'
+            ]
+        )
+    ])]
+class User {
+    #[Groups(['user:write'])] 
+    private string $email; 
+
+    private float $balance; 
+    private string[] $roles;
+}
+```
+
+---
+
+###### Niveau 3
+#### Serializer
+## `denormalizationContext` - Exemple 2/2
+
+Si un client envoie ce JSON pour s'inscrire :
+
+```json
+{
+    "email": "hacker@test.com",
+    "balance": 999999,      // <-- Tentative d'injection
+    "roles": ["ROLE_ADMIN"] // <-- Tentative d'injection
+}
+```
+
+Le Serializer ignorera `balance` et `roles` car ils n'ont pas le groupe `user:write`.
 
 --- 
-#### Serializer
-## Les Groups
+
+###### Niveau 3
+#### Api Platform - Serializer
+## Les Groups - Exemple Complet
 
 <div style="font-size:34px">
 
