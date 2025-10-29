@@ -2,12 +2,14 @@ import * as THREE from "three"
 import { CameraController } from "./CameraController"
 import { RendererManager } from "./RendererManager"
 import { GridManager } from "./GridManager"
+import { BuildManager } from "./BuildManager"
 
 export default class Scene {
     private scene: THREE.Scene
     private cameraController: CameraController | null = null
     private rendererManager: RendererManager | null = null
     private gridManager: GridManager | null = null
+    private buildManager: BuildManager | null = null
     private animationId: number | null = null
 
     constructor() {
@@ -16,14 +18,14 @@ export default class Scene {
         this.scene.fog = new THREE.Fog(0xf5f5f5, 10, 50)
     }
 
-    public mounted(sceneContainer: HTMLElement) {
+    public mounted(sceneContainer: HTMLElement, grid: any, buildings: any) {
         const width = sceneContainer.clientWidth
         const height = sceneContainer.clientHeight
 
         this.rendererManager = new RendererManager(sceneContainer)
         this.cameraController = new CameraController(width, height, this.rendererManager.renderer)
-
-        this.gridManager = new GridManager(100, 100)
+        this.gridManager = new GridManager(grid.size, grid.size)
+        this.buildManager = new BuildManager(this.gridManager)
         this.scene.add(this.gridManager.getGridHelper())
         this.scene.add(this.gridManager.getHighlightMesh())
         this.scene.add(this.gridManager.getIntersectionPlane()) // Added intersection plane to scene

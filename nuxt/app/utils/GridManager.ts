@@ -24,8 +24,7 @@ export class GridManager {
         this.gridDivisions = divisions
         this.cellSize = size / divisions
 
-        // Create the grid helper
-        this.gridHelper = new THREE.GridHelper(size, divisions, 0xcccccc, 0xe0e0e0)
+        this.gridHelper = new THREE.GridHelper(size, divisions, 0xcccccc, 0xd9d9d9)
         this.gridHelper.position.y = -2
 
         this.createTiles()
@@ -48,10 +47,9 @@ export class GridManager {
         })
         this.highlightMesh = new THREE.Mesh(highlightGeometry, highlightMaterial)
         this.highlightMesh.rotation.x = -Math.PI / 2
-        this.highlightMesh.position.y = -1.98 // Slightly above grid to avoid z-fighting
+        this.highlightMesh.position.y = -1.98
         this.highlightMesh.visible = false
 
-        // Setup raycaster for mouse interaction
         this.raycaster = new THREE.Raycaster()
         this.mouse = new THREE.Vector2()
     }
@@ -59,9 +57,9 @@ export class GridManager {
     private createTiles() {
         const tileGeometry = new THREE.PlaneGeometry(this.cellSize * 0.95, this.cellSize * 0.95)
         const tileMaterial = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
+            color: new THREE.Color(255, 255, 255),
             transparent: true,
-            opacity: 0.8,
+            opacity: 0.2,
             side: THREE.DoubleSide,
         })
 
@@ -75,7 +73,6 @@ export class GridManager {
                 const worldPos = this.gridToWorld(x, z)
                 tile.position.set(worldPos.x, -2, worldPos.z)
 
-                // Store initial position for animation
                 tile.userData.initialY = -2
                 tile.userData.gridX = x
                 tile.userData.gridZ = z
@@ -124,12 +121,9 @@ export class GridManager {
         if (intersects.length > 0) {
             const point = intersects[0].point
 
-            // Calculate which grid cell we're in using floor
             const gridX = Math.floor(point.x / this.cellSize)
             const gridZ = Math.floor(point.z / this.cellSize)
 
-            // Convert back to world position (center of cell)
-            // Add 0.5 * cellSize to center the highlight in the cell
             const worldX = gridX * this.cellSize + this.cellSize / 2
             const worldZ = gridZ * this.cellSize + this.cellSize / 2
 
@@ -159,48 +153,6 @@ export class GridManager {
         return {
             x: Math.round(worldX / this.cellSize),
             z: Math.round(worldZ / this.cellSize),
-        }
-    }
-
-    public isValidGridPosition(gridX: number, gridZ: number): boolean {
-        const halfDivisions = this.gridDivisions / 2
-        return gridX >= -halfDivisions && gridX < halfDivisions && gridZ >= -halfDivisions && gridZ < halfDivisions
-    }
-
-    public updateWaveAnimation(deltaTime: number) {
-        if (!this.isAnimating) return
-
-        this.tileAnimationProgress += deltaTime * 0.8
-
-        this.tiles.forEach((tile) => {
-            const x = tile.userData.gridX
-            const z = tile.userData.gridZ
-
-            // Calculate distance from center for wave effect
-            const distance = Math.sqrt(x * x + z * z)
-
-            // Wave parameters
-            const waveSpeed = 2
-            const waveHeight = 0.5
-            const waveFrequency = 0.15
-
-            // Calculate wave offset based on distance and time
-            const wave = Math.sin(distance * waveFrequency - this.tileAnimationProgress * waveSpeed)
-            const height = Math.max(0, wave) * waveHeight
-
-            // Apply smooth fade out
-            const fadeOut = Math.max(0, 1 - this.tileAnimationProgress / 4)
-
-            tile.position.y = tile.userData.initialY + height * fadeOut
-        })
-
-        // Stop animation after it completes
-        if (this.tileAnimationProgress > 6) {
-            this.isAnimating = false
-            // Reset tiles to initial position
-            this.tiles.forEach((tile) => {
-                tile.position.y = tile.userData.initialY
-            })
         }
     }
 

@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\UniqueConstraint(name: 'unique_name', columns: ['name'])]
 #[ApiResource(operations: [
     new Get(uriTemplate: '/me',
         controller: MeController::class,
@@ -36,6 +37,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:create'])]
     private ?string $email = null;
 
+    #[ORM\Column(length: 180)]
+    #[Groups(['user:create'])]
+    private string $name = "";
+
     /**
      * @var list<string> The user roles
      */
@@ -48,6 +53,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Groups(['user:create'])]
     private ?string $password = null;
+
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Grid $grid = null;
 
     public function getId(): ?int
     {
@@ -98,9 +106,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getGrid(): ?Grid
+    {
+        return $this->grid;
+    }
+
+    public function setGrid(Grid $grid): static
+    {
+        // set the owning side of the relation if necessary
+        if ($grid->getUser() !== $this) {
+            $grid->setUser($this);
+        }
+
+        $this->grid = $grid;
+
+        return $this;
     }
 }

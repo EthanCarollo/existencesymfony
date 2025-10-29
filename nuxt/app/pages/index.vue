@@ -7,7 +7,15 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount, ref } from 'vue'
-import Sidebar from "~/components/Sidebar.vue";
+import { useGrid } from '~/composables/useGrid.js'
+import { useBuildings } from '~/composables/useBuildings.js'
+import { useAuth } from '~/composables/useAuth.js'
+import Sidebar from "~/components/sidebar/Sidebar.vue";
+
+const { token } = useAuth();
+const { fetchGrid } = useGrid()
+const { fetchBuildings } = useBuildings()
+const modelLoader = new ModelLoader();
 
 definePageMeta({
     middleware: 'auth'
@@ -17,7 +25,15 @@ const sceneContainer = ref(null)
 let scene = new Scene()
 
 onMounted(async () => {
-    scene.mounted(sceneContainer.value)
+    let gridResponse = await fetchGrid(token.value)
+    let buildingsResponse = await fetchBuildings(token.value)
+
+    var modelToLoad = buildingsResponse.buildings.map(building => {
+        return { url: useRuntimeConfig().public.backUrl + '/api' + building.model, key: building.model}
+    })
+    modelLoader.loadModels(modelToLoad)
+
+    scene.mounted(sceneContainer.value, gridResponse.grid, buildingsResponse.buildings)
 })
 </script>
 

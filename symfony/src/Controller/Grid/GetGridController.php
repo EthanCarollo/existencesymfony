@@ -1,13 +1,12 @@
 <?php
-
-namespace App\Controller\Auth;
+namespace App\Controller\Grid;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
-class MeController extends AbstractController
+class GetGridController extends AbstractController
 {
     public function __invoke(): JsonResponse
     {
@@ -17,11 +16,14 @@ class MeController extends AbstractController
             return new JsonResponse(['error' => 'User not authenticated'], 401);
         }
 
+        $grid = $user->getGrid();
+
+        if (!$grid) {
+            return new JsonResponse(['error' => "Grid doesn't exist for this user."], 401);
+        }
+
         return new JsonResponse([
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'name' => $user->getName(),
-            'roles' => $user->getRoles(),
+            'size' => $grid->getSize()
         ]);
     }
 }

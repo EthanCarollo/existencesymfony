@@ -40,9 +40,12 @@ Un composant Vue (ou Nuxt) sera intégré dans Symfony pour gérer les interface
 
 ### Phase 3 - Mise en place de la simulation
 
-* Définir le modèle de données des personnages (nom, caractéristiques, état, historique des interactions)
+* Pouvoir mettre en place des batiments
+* Pouvoir assigner des personnages dans ces batiments
+* Création de personnages
+* Mise en place de symfony AI
 * Définir des intéractions entre personnages
-* Implémenter la logique de base de la simulation
+* Implémenter une logique de base de la simulation
 
 ### Phase 4 – Création de personnages à partir de prompts
 
@@ -51,3 +54,9 @@ Un composant Vue (ou Nuxt) sera intégré dans Symfony pour gérer les interface
 * Ajouter la création automatique d’un historique ou d’une personnalité en fonction du prompt.
 * Tester la génération de personnages et leur intégration dans la simulation.
 * Prévoir la possibilité de modifier ou d’éditer manuellement les caractéristiques du personnage après génération.
+
+## Schéma DB
+
+```mermaid 
+
+```
