@@ -10,7 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
-#[ApiResource]
+# #[ApiResource]
 class Character
 {
     #[ORM\Id]
@@ -19,7 +19,7 @@ class Character
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $na�me = null;
+    private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $personality = null;
@@ -55,14 +55,14 @@ class Character
         return $this->id;
     }
 
-    public function getNa�me(): ?string
+    public function getName(): ?string
     {
-        return $this->na�me;
+        return $this->name;
     }
 
-    public function setNa�me(string $na�me): static
+    public function setName(string $name): static
     {
-        $this->na�me = $na�me;
+        $this->name = $name;
 
         return $this;
     }
