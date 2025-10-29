@@ -244,14 +244,47 @@ class Book {
 * Désérialisation = l’inverse : transformer des données reçues (JSON, XML…) en objet PHP.
 
 --- 
+
 #### Serializer
 ## Api Platform et Serialization
 
+Comprendre le flow de serialization avant de comprendre comment API Platform l'utilise
+
+![image|300px|no-margin](mermaid.png)
 
 --- 
 #### Serializer
 ## Api Platform et Serialization
 
-Serialization des données
+API Platform s’appuie sur le Symfony Serializer pour :
 
-![image|300px|no-margin](mermaid.png)
+* Transformer les entités (objets) en format standardisé quand on fait une requête de récupération (-> normalization).
+* Transformer le JSON reçu en objet quand on fait une requête de modification (-> denormalization). 
+
+--- 
+#### Serializer
+## Les Groups
+
+<div style="font-size:34px">
+
+```php
+#[ApiResource(
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']]
+)]
+class User
+{
+    #[Groups(['user:read'])] # Apparait en GET
+    private int $id;
+
+    #[Groups(['user:read', 'user:write'])]  # Apparait en GET et accépté en entrée (ex: Post, Put,...)
+    private string $email;
+
+    #[Groups(['user:write'])]  # Accépté en entrée (ex: Post, Put,...)
+    private string $password;
+}
+```
+
+</div>
+
+> API Platform se sert de ces étapes pour contrôler ce qu’on récupère (normalization) et ce qu’on modifie (denormalization) via les groupes.
