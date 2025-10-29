@@ -5,16 +5,14 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\GridBuildingRepository;
+use App\State\GridBuildingProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GridBuildingRepository::class)]
 #[ApiResource(operations: [
-    new GetCollection(
-        security: "is_granted('ROLE_USER')",
-        securityMessage: "Vous ne pouvez voir que vos propres bâtiments."
-    )
+    new GetCollection(provider: GridBuildingProvider::class)
 ])]
 class GridBuilding
 {

@@ -24,7 +24,11 @@ class AppFixtures extends Fixture
     {
         $this->createUsers($manager);
         $building = $this->createBuildings($manager);
-        $gridBuilding = $this->createGridBuilding($manager, $building);
+        $user = $manager->getRepository(User::class)->findOneBy(['email' => 'tomato@gmail.com']);
+        $grid = $manager->getRepository(Grid::class)->findOneBy(['user' => $user]);
+        $user = $manager->getRepository(User::class)->findOneBy(['email' => 'test1234@gmail.com']);
+        $grid = $manager->getRepository(Grid::class)->findOneBy(['user' => $user]);
+        $gridBuilding = $this->createGridBuilding($manager, $building, $grid);
         $character = $this->createCharacter($manager, $gridBuilding);
         $manager->flush();
     }
@@ -39,17 +43,8 @@ class AppFixtures extends Fixture
         return $character;
     }
 
-    private function createGridBuilding(ObjectManager $manager, Buildings $building): GridBuilding
+    private function createGridBuilding(ObjectManager $manager, Buildings $building, Grid $grid): GridBuilding
     {
-        $user = $manager->getRepository(User::class)->findOneBy(['email' => 'test1234@gmail.com']);
-        if (!$user) {
-            throw new \Exception('Utilisateur test1234@gmail.com non trouvé');
-        }
-        $grid = $manager->getRepository(Grid::class)->findOneBy(['user' => $user]);
-        if (!$grid) {
-            throw new \Exception('Grille pour test1234@gmail.com non trouvée');
-        }
-
         $gridBuilding = new GridBuilding();
         $gridBuilding->setGrid($grid);
         $gridBuilding->setBuilding($building);

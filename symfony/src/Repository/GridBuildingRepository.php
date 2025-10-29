@@ -16,28 +16,13 @@ class GridBuildingRepository extends ServiceEntityRepository
         parent::__construct($registry, GridBuilding::class);
     }
 
-//    /**
-//     * @return GridBuilding[] Returns an array of GridBuilding objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('g.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?GridBuilding
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findByUser($user)
+    {
+        return $this->createQueryBuilder('gb')
+            ->join('gb.grid', 'g')
+            ->andWhere('g.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
 }

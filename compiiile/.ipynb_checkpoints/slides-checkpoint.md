@@ -21,11 +21,13 @@ Api Platform est un framework centré sur le fait de faire une API construit au 
 
 Api Platform permet d'exposer des Entités sur une Api Public avec une documentation swagger en quelques minutes.
 
+![image|400vh|no-margin](image.png)
+
 ---
 
 ###### Niveau 0
-#### Api Platform
-## Comment ça le fait concrètement ?
+##### Api Platform
+## Comment on le fait concrètement ?
 
 Il suffit d'un simple changement sur une entité pour la rendre publique dans l'api.
 
@@ -63,5 +65,57 @@ class User{
 
 ---
 
+###### Niveau 0
+##### Api Platform
+## Les possibilités et les attributs
 
-_Test_
+```php
+#[ApiResource(
+    paginationItemsPerPage: 30 # <-- Pagination
+    )]
+class Book{
+
+}
+```
+
+--- 
+
+###### Niveau 1
+#### Api Platform
+## Sélectionner les opérations possibles.
+
+Il est possible de sélectionner les opérations qu'on souhaite pouvoir réaliser depuis l'API.
+
+```php
+#[ORM\Entity(...)]
+#[ApiResource(operations: [
+    new Get() # <-------- Permet d'ajouter uniquement 
+    #                    l'opération GET dans l'entity
+    ])] 
+class User{
+
+}
+```
+
+--- 
+
+###### Niveau 1
+#### Api Platform
+## Paramétrer les opérations possibles.
+
+Il est possible de paramétrer les opérations qu'on souhaite pouvoir réaliser depuis l'API.
+
+```php
+#[ORM\Entity(...)]
+#[ApiResource(operations: [
+    new Get(
+        uriTemplate: '/user/{email}',
+        uriVariables: ['email' => 'email'],
+    )
+    ])] 
+class User{
+    private ?string $email = null;
+
+    [...]
+}
+```
