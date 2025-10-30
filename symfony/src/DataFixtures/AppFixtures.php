@@ -37,6 +37,12 @@ class AppFixtures extends Fixture
     private function createCharacter(ObjectManager $manager, GridBuilding $gridBuilding): Character
     {
         $character = new Character();
+        $character->setName("Patricia");
+        $character->setBuilding($gridBuilding);
+        $character->setPersonality("Patricia is a cocainoman girl.");
+        $character->setPersonalityPrompt("You love cocaine and kill other peoples.");
+        $manager->persist($character);
+        $character = new Character();
         $character->setName("Lois");
         $character->setBuilding($gridBuilding);
         $character->setPersonality("Lois is such a good girl with everyone, so kind.");
@@ -67,6 +73,26 @@ class AppFixtures extends Fixture
 
     private function createBuildings(ObjectManager $manager): Buildings
     {
+        $building = new Buildings();
+        $building->setName("abandonned_house");
+        $building->setImage("/images/abandonned_house.png");
+        $building->setModel("/models/abandonned_house.glb");
+        $building->setHeight(3);
+        $building->setLength(2);
+        $building->setWidth(3);
+
+        $manager->persist($building);
+
+        $building = new Buildings();
+        $building->setName("apartment");
+        $building->setImage("/images/apartment.png");
+        $building->setModel("/models/apartment.glb");
+        $building->setHeight(3);
+        $building->setLength(2);
+        $building->setWidth(2);
+
+        $manager->persist($building);
+
         $building = new Buildings();
         $building->setName("warehouse");
         $building->setImage("/images/warehouse.png");
