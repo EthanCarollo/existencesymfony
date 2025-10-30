@@ -41,7 +41,6 @@ onMounted(async () => {
 
     scene.mounted(sceneContainer.value,
         gridResponse.grid,
-        buildingsResponse.buildings,
         modelLoader
     )
 })

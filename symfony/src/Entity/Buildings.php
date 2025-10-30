@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\BuildingsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: BuildingsRepository::class)]
 #[ApiResource(
@@ -21,21 +22,27 @@ class Buildings
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['grid:read'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['grid:read'])]
     private ?int $width = null;
 
     #[ORM\Column]
+    #[Groups(['grid:read'])]
     private ?int $height = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['grid:read'])]
     private ?string $model = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['grid:read'])]
     private ?string $image = null;
 
     #[ORM\Column]
+    #[Groups(['grid:read'])]
     private ?int $length = null;
 
     public function getId(): ?int

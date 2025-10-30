@@ -27,7 +27,7 @@ export default class Scene {
         return Scene.instance
     }
 
-    public mounted(sceneContainer: HTMLElement, grid: any, buildings: any, modelLoader: ModelLoader) {
+    public mounted(sceneContainer: HTMLElement, grid: any, modelLoader: ModelLoader) {
         const width = sceneContainer.clientWidth
         const height = sceneContainer.clientHeight
 
@@ -36,7 +36,7 @@ export default class Scene {
         this.rendererManager = new RendererManager(sceneContainer)
         this.cameraController = new CameraController(width, height, this.rendererManager.renderer)
         this.gridManager = new GridManager(grid.size, grid.size)
-        this.buildManager = new BuildManager(this.gridManager, this.modelLoader, this.cameraController, this)
+        this.buildManager = new BuildManager(this.gridManager, this.modelLoader, this.cameraController, this, grid)
         this.scene.add(this.gridManager.getGridHelper())
         this.scene.add(this.gridManager.getHighlightMesh())
         this.scene.add(this.gridManager.getIntersectionPlane()) // Added intersection plane to scene
@@ -78,5 +78,9 @@ export default class Scene {
         this.rendererManager?.destroy()
         this.gridManager?.destroy()
         // window.removeEventListener("resize", this.onResize)
+    }
+
+    public add(scene: THREE.Scene) {
+        this.scene.add(scene)
     }
 }

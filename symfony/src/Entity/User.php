@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use App\Controller\Auth\MeController;
 use App\Controller\Auth\RegisterController;
+use App\State\CurrentUserDataProvider;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -17,9 +18,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'unique_name', columns: ['name'])]
 #[ApiResource(operations: [
-    new Get(uriTemplate: '/me',
-        controller: MeController::class,
-        name: "user"),
+    new Get(
+        uriTemplate: '/me',
+        normalizationContext: ['groups' => ['user:read']],
+        provider: CurrentUserDataProvider::class
+    ),
     new Post(
         uriTemplate: '/register',
         controller: RegisterController::class,
@@ -34,27 +37,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['user:create'])]
+    #[Groups(['user:create', 'user:read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['user:create'])]
+    #[Groups(['user:create', 'user:read'])]
     private string $name = "";
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     #[Groups(['user:create'])]
     private ?string $password = null;
 
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    #[Groups(['user:read'])]
     private ?Grid $grid = null;
 
     public function getId(): ?int

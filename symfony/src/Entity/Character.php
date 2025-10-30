@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 # #[ApiResource]
@@ -18,15 +19,19 @@ class Character
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['grid:read'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups(['grid:read'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $personality = null;
 
+    #[Groups(['grid:read'])]
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
+    #[Groups(['grid:read'])]
     #[ORM\ManyToOne(inversedBy: 'characters')]
     #[ORM\JoinColumn(nullable: false)]
     private ?GridBuilding $building = null;
@@ -42,6 +47,9 @@ class Character
      */
     #[ORM\OneToMany(targetEntity: Chat::class, mappedBy: 'sended', orphanRemoval: true)]
     private Collection $sendedChats;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $personality_prompt = null;
 
     public function __construct()
     {
@@ -63,6 +71,11 @@ class Character
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        if ($this->image === null) {
+            $seed = urlencode($name);
+            $this->image = "https://api.dicebear.com/9.x/croodles/svg?seed={$seed}";
+        }
 
         return $this;
     }
@@ -159,6 +172,18 @@ class Character
                 $sendedChat->setSended(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPersonalityPrompt(): ?string
+    {
+        return $this->personality_prompt;
+    }
+
+    public function setPersonalityPrompt(string $personality_prompt): static
+    {
+        $this->personality_prompt = $personality_prompt;
 
         return $this;
     }

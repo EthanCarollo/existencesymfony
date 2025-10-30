@@ -130,7 +130,7 @@ export class GridManager {
             this.highlightMesh.position.x = worldX
             this.highlightMesh.position.z = worldZ
             this.highlightMesh.visible = true
-
+            // console.warn(gridX + " - " + gridZ)
             this.currentGridPosition = { x: gridX, z: gridZ }
         } else {
             this.highlightMesh.visible = false

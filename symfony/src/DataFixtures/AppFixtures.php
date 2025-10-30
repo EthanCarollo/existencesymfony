@@ -26,19 +26,27 @@ class AppFixtures extends Fixture
         $building = $this->createBuildings($manager);
         $user = $manager->getRepository(User::class)->findOneBy(['email' => 'tomato@gmail.com']);
         $grid = $manager->getRepository(Grid::class)->findOneBy(['user' => $user]);
-        $user = $manager->getRepository(User::class)->findOneBy(['email' => 'test1234@gmail.com']);
+        $this->createGridBuilding($manager, $building, $grid);
+        $user = $manager->getRepository(User::class)->findOneBy(['email' => 'test123@gmail.com']);
         $grid = $manager->getRepository(Grid::class)->findOneBy(['user' => $user]);
         $gridBuilding = $this->createGridBuilding($manager, $building, $grid);
         $character = $this->createCharacter($manager, $gridBuilding);
         $manager->flush();
     }
 
-    private function createCharacter(ObjectManager $manager, GridBuilding $gridBuilding): Character {
+    private function createCharacter(ObjectManager $manager, GridBuilding $gridBuilding): Character
+    {
+        $character = new Character();
+        $character->setName("Lois");
+        $character->setBuilding($gridBuilding);
+        $character->setPersonality("Lois is such a good girl with everyone, so kind.");
+        $character->setPersonalityPrompt("You are a very kind girl.");
+        $manager->persist($character);
         $character = new Character();
         $character->setName("Tristan");
-        $character->setImage("tristan.jpg");
         $character->setBuilding($gridBuilding);
-        $character->setPersonality("You are a dumb asshole");
+        $character->setPersonality("Tristan is a terrible dumb asshole.");
+        $character->setPersonalityPrompt("You are a dumb asshole");
         $manager->persist($character);
         return $character;
     }
@@ -46,10 +54,10 @@ class AppFixtures extends Fixture
     private function createGridBuilding(ObjectManager $manager, Buildings $building, Grid $grid): GridBuilding
     {
         $gridBuilding = new GridBuilding();
-        $gridBuilding->setGrid($grid);
         $gridBuilding->setBuilding($building);
         $gridBuilding->setXPos(2);
         $gridBuilding->setYPos(4);
+        $grid->addGridBuilding($gridBuilding);
 
         $manager->persist($gridBuilding);
         $manager->flush();
@@ -76,6 +84,7 @@ class AppFixtures extends Fixture
     private function createUsers(ObjectManager $manager): void
     {
         $usersData = [
+            ['name' => 'Peanut', 'email' => 'test123@gmail.com'],
             ['name' => 'Cucumber', 'email' => 'test1234@gmail.com'],
             ['name' => 'Lettuce', 'email' => 'lettuce@gmail.com'],
             ['name' => 'Tomato', 'email' => 'tomato@gmail.com'],

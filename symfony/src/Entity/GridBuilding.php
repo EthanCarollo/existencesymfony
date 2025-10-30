@@ -9,6 +9,7 @@ use App\State\GridBuildingProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: GridBuildingRepository::class)]
 #[ApiResource(operations: [
@@ -19,27 +20,29 @@ class GridBuilding
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['grid:read'])]
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['grid:read'])]
     private ?int $xPos = null;
 
     #[ORM\Column]
+    #[Groups(['grid:read'])]
     private ?int $yPos = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['grid:read'])]
     private ?Buildings $building = null;
+
+    #[Groups(['grid:read'])]
+    #[ORM\OneToMany(targetEntity: Character::class, mappedBy: 'building', orphanRemoval: true)]
+    private Collection $characters;
 
     #[ORM\ManyToOne(inversedBy: 'gridBuildings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Grid $grid = null;
-
-    /**
-     * @var Collection<int, Character>
-     */
-    #[ORM\OneToMany(targetEntity: Character::class, mappedBy: 'building', orphanRemoval: true)]
-    private Collection $characters;
 
     public function __construct()
     {
@@ -87,18 +90,6 @@ class GridBuilding
         return $this;
     }
 
-    public function getGrid(): ?Grid
-    {
-        return $this->grid;
-    }
-
-    public function setGrid(?Grid $grid): static
-    {
-        $this->grid = $grid;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Character>
      */
@@ -125,6 +116,18 @@ class GridBuilding
                 $character->setBuilding(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getGrid(): ?Grid
+    {
+        return $this->grid;
+    }
+
+    public function setGrid(?Grid $grid): static
+    {
+        $this->grid = $grid;
 
         return $this;
     }

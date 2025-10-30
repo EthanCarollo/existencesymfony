@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-full">
         <!-- Header -->
-        <div class="p-4 border-b border-gray-200">
+        <div class="p-4">
             <h2 class="text-lg font-semibold text-gray-900">Buildings</h2>
         </div>
 
@@ -13,7 +13,7 @@
                 @mousedown.prevent="onDragStart(building, $event)"
                 @mouseup="onDragEnd(building, $event)"
                 @click="handleBuild(building)"
-                class="flex flex-col items-center gap-3 p-3 border-b border-gray-100 transition-colors cursor-pointer hover:bg-gray-50"
+                class="flex flex-col items-center gap-3 p-3 transition-colors cursor-pointer hover:bg-gray-50/30"
             >
                 <div class="flex items-center gap-3 w-full">
                     <div class="flex-shrink-0 w-16 h-16 bg-gray-100 rounded overflow-hidden">
@@ -29,12 +29,12 @@
                             {{ building.name }}
                         </h3>
                         <div class="flex items-center gap-3 mt-1 text-xs text-gray-500">
-              <span class="flex items-center gap-1">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"/>
-                </svg>
-                {{ building.width }} × {{ building.length }}
-              </span>
+                          <span class="flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"/>
+                            </svg>
+                            {{ building.width }} × {{ building.length }}
+                          </span>
                         </div>
                     </div>
                 </div>
@@ -60,7 +60,7 @@ const onDragStart = (building, event) => {
     dragging.value = true
     currentBuilding.value = building
     console.log('Drag started:', building)
-    scene.buildManager.setSelectedObject(building.model)
+    scene.buildManager.setSelectedObject(building.model, event)
 
     // Écoute globale pour détecter le relâché de la souris
     window.addEventListener('mousemove', onDragMove)
