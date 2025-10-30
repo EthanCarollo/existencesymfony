@@ -32,7 +32,7 @@ Api Platform est un framework conçu pour créer des API REST, construit au dess
 #### Api Platform
 ## Philosophie
 
-* Permettre aux développeurs de pouvoir connecter leur techno front préféré sur Symfony sans rajout de surcouches
+* Permettre aux développeurs de pouvoir connecter leur techno front préféré sur Symfony en passant par une API Rest
 * Création automatique de documentation et respect des standards
 * Automatisation, productivité et Extensibilité
 
@@ -47,6 +47,10 @@ Api Platform est un framework conçu pour créer des API REST, construit au dess
 Api Platform permet d’exposer des entités via une API publique et de générer une documentation "Swagger" en quelques minutes.
 
 ![image|400vh|no-margin](image.png)
+
+<div style="font-size:18px;">
+(Swagger est un format qui sert à décrire, documenter et tester une API Rest)
+</div>
 
 ---
 
@@ -238,6 +242,29 @@ class Book {
 }
 ```
 
+
+---
+
+###### Niveau 2
+#### Api Platform
+## Les Processors
+
+A l'inverse du providers, le processor lui va intervenir au moment de traiter la donnée et de la modifier.
+
+```php
+class BookProcessor implements ProcessorInterface
+{
+    public function __construct(private EntityManagerInterface $em) {}
+
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
+    {
+        $data->setUpdatedAt(new \DateTimeImmutable());
+        // ... enregistre en base etc ...
+        return $data;
+    }
+}
+```
+
 --- 
 
 ###### Niveau 2
@@ -416,3 +443,40 @@ class User
 </div>
 
 > API Platform se sert de ces étapes pour contrôler ce qu’on récupère (normalization) et ce qu’on modifie (denormalization) via les groupes.
+
+--- 
+
+#### Api Platform - Annexes
+## La securité
+
+Api Platform fonctionne de pair avec la sécurité, il est possible de parametrer certaines routes de modification (PUT, par exemple) afin d'uniquement accepté 
+
+```php 
+#[ApiResource(security: "is_granted('ROLE_USER')")]
+#[Put(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
+class Book
+{
+    #[ORM\ManyToOne]
+    public User $owner;
+}
+```
+
+<a href="https://api-platform.com/docs/symfony/security/" style="font-size:16px; margin-top:8px;">sources</a>
+
+--- 
+
+#### Api Platform - Annexes
+## Liste de bundles
+
+Des bundles souvent utilisé avec API Platform
+
+<div style="display: flex; justify-content: center;">
+
+| Bundle                              | Description                                                                      |
+| ----------------------------------- | -------------------------------------------------------------------------------- |
+| **lexik/jwt-authentication-bundle** | Gère l’authentification via JSON Web Tokens (JWT) pour sécuriser l’API.          |
+| **vich/uploader-bundle**            | Simplifie l’upload et la gestion des fichiers liés aux entités.                  |
+| **easycorp/easyadmin-bundle**       | Fournit une interface d’administration rapide pour gérer les entités.            |
+| **stof/doctrine-extensions-bundle** | Ajoute des fonctionnalités avancées à Doctrine (sluggable, timestampable, etc.). |
+
+</div>
