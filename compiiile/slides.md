@@ -256,7 +256,7 @@ class BookProcessor implements ProcessorInterface
 {
     public function __construct(private EntityManagerInterface $em) {}
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
+    public function process(...)
     {
         $data->setUpdatedAt(new \DateTimeImmutable());
         // ... enregistre en base etc ...
@@ -264,6 +264,8 @@ class BookProcessor implements ProcessorInterface
     }
 }
 ```
+
+<a href="https://api-platform.com/docs/core/state-processors/" style="font-size:16px; margin-top:8px;">sources<a>
 
 --- 
 
@@ -354,12 +356,12 @@ API Platform s’appuie sur le Symfony Serializer pour :
 #[ApiResource( operations: [
         new Get(
             # On ne montre que les champs tagués "user:read"
-            normalizationContext: [ 'groups' => 'user:read' ]
+            normalizationContext: ['groups' => 'user:read']
         ),
         new Get(
             uriTemplate: '/users/me',
             # On montre "user:read" ET "user:read:self"
-            normalizationContext: [ 'groups' => ['user:read', 'user:read:self']]
+            normalizationContext: ['groups' => ['user:read', 'user:read:self']]
         )])]
 class User {
     # -> `GET /api/users/{id}` & `GET /api/users/me` renverra cette propriété
