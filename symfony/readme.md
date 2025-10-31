@@ -17,3 +17,7 @@ Launch migration
 ```
 symfony console d:m:m
 ```
+
+## This is incredible
+
+https://github.com/symfony/ai/blob/main/examples/lmstudio/chat.php

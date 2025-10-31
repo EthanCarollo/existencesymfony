@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\ChatRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\MaxDepth;
 
 #[ORM\Entity(repositoryClass: ChatRepository::class)]
 class Chat
@@ -12,11 +14,8 @@ class Chat
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['grid:read', 'character:read'])]
     private ?int $id = null;
-
-    #[ORM\ManyToOne(inversedBy: 'receiver')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Character $sender = null;
 
     #[ORM\ManyToOne(inversedBy: 'receivedChats')]
     #[ORM\JoinColumn(nullable: false)]
@@ -27,8 +26,10 @@ class Chat
     private ?Character $sended = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['grid:read', 'character:read'])]
     private ?string $message = null;
 
+    #[Groups(['grid:read'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -37,28 +38,29 @@ class Chat
         return $this->id;
     }
 
-    public function getSender(): ?Character
-    {
-        return $this->sender;
-    }
-
-    public function setSender(?Character $sender): static
-    {
-        $this->sender = $sender;
-
-        return $this;
-    }
-
     public function getReceiver(): ?Character
     {
         return $this->receiver;
     }
+
+    #[Groups(['character:read', 'grid:read'])]
+    public function getReceiverId(): ?int
+    {
+        return $this->receiver?->getId();
+    }
+
 
     public function setReceiver(?Character $receiver): static
     {
         $this->receiver = $receiver;
 
         return $this;
+    }
+
+    #[Groups(['character:read', 'grid:read'])]
+    public function getSendedId(): ?int
+    {
+        return $this->sended?->getId();
     }
 
     public function getSended(): ?Character

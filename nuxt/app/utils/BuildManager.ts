@@ -58,7 +58,9 @@ export class BuildManager {
             this.scene.sceneContainer,
             this.cameraController.camera
         )
-        console.warn(position)
+        if(position === null) {
+            return;
+        }
         this.targetPosition = new THREE.Vector3(
             position.x + this.modelLoader.getModelByKey(this.selectedObject).width / 2,
             -2,

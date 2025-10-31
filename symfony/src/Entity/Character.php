@@ -3,31 +3,41 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CharacterRepository;
+use App\State\CurrentCharacterProvider;
+use App\State\GridBuildingProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
-# #[ApiResource]
+#[ApiResource(operations: [
+    new GetCollection(normalizationContext: [
+        'groups' => ['character:read']
+    ],
+        provider: CurrentCharacterProvider::class,)
+])]
 class Character
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['grid:read', 'character:read'])]
     private ?int $id = null;
 
-    #[Groups(['grid:read'])]
+    #[Groups(['grid:read', 'character:read'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[Groups(['grid:read'])]
+    #[Groups(['character:read', 'grid:read'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $personality = null;
 
-    #[Groups(['grid:read'])]
+    #[Groups(['grid:read', 'character:read'])]
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
@@ -39,12 +49,14 @@ class Character
     /**
      * @var Collection<int, Chat>
      */
+    #[Groups(['character:read', 'grid:read'])]
     #[ORM\OneToMany(targetEntity: Chat::class, mappedBy: 'receiver', orphanRemoval: true)]
     private Collection $receivedChats;
 
     /**
      * @var Collection<int, Chat>
      */
+    #[Groups(['character:read', 'grid:read'])]
     #[ORM\OneToMany(targetEntity: Chat::class, mappedBy: 'sended', orphanRemoval: true)]
     private Collection $sendedChats;
 

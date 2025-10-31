@@ -2,7 +2,7 @@
     <div
         class="fixed left-3 top-1/2 -translate-y-1/2 flex  items-center gap-8"
     >
-        <div class="bg-black/0 backdrop-blur-[2px] p-3 rounded-3xl shadow-lg">
+        <div class="bg-white/90 backdrop-blur-[2px] p-3 rounded-3xl shadow-lg">
             <div class="flex flex-col space-y-4">
                 <button
                     v-for="item in navigationItems"
@@ -21,7 +21,7 @@
         </div>
         <!-- <CHANGE> Added Transition component for slide-in animation from right -->
         <Transition name="slide-from-left">
-            <div class="bg-black/0 backdrop-blur-[2px] py-4 px-8 rounded-3xl shadow-lg w-80" v-if="activeComponent !== null">
+            <div class="bg-white/90 backdrop-blur-[2px] py-4 px-8 rounded-3xl shadow-lg w-80" v-if="activeComponent !== null">
                 <component :is="activeComponent" class="w-full" />
             </div>
         </Transition>

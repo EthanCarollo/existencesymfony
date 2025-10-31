@@ -57,27 +57,13 @@
                     class="pb-3 "
                 >
                     <div class="flex gap-3 overflow-x-auto pb-2 flex-col">
-                        <div
+                        <Character
                             v-for="character in building.dataObject.characters"
                             :key="character['@id']"
-                            class="flex-shrink-0 w-64 bg-white/20 rounded-lg p-3 border border-gray-200 shadow-sm "
-                        >
-                            <div class="flex items-start gap-3">
-                                <img
-                                    :src="character.image"
-                                    :alt="character.name"
-                                    class="w-12 h-12 rounded-full flex-shrink-0"
-                                />
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="font-semibold text-gray-900 text-sm truncate">
-                                        {{ character.name }}
-                                    </h4>
-                                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">
-                                        {{ character.personality }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                            :character="character"
+                            :empty="false"
+                            @click="openPanelCharacter(character)"
+                        />
                     </div>
                 </div>
 
@@ -99,11 +85,18 @@ import { ref, onMounted } from 'vue'
 const buildManager = Scene.getInstance().buildManager
 const buildings = ref([])
 const openBuildingId = ref(null)
+const { $bus } = useNuxtApp()
 
 onMounted(() => {
     buildings.value = buildManager?.objectOnGrid || []
     console.warn(buildings.value)
 })
+
+const openPanelCharacter = (character: any) => {
+    console.warn(character)// listen
+    $bus.emit('active-chat', { "character": character })
+
+}
 
 const toggleBuilding = (buildingId: string) => {
     if (openBuildingId.value === buildingId) {

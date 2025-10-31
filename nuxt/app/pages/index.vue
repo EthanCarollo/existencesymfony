@@ -2,6 +2,7 @@
     <div>
         <div id="canvas" ref="sceneContainer" class="w-full h-full"></div>
         <Sidebar />
+        <Chat />
     </div>
 </template>
 

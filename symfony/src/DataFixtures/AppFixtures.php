@@ -40,19 +40,19 @@ class AppFixtures extends Fixture
         $character->setName("Patricia");
         $character->setBuilding($gridBuilding);
         $character->setPersonality("Patricia is a cocainoman girl.");
-        $character->setPersonalityPrompt("You love cocaine and kill other peoples.");
+        $character->setPersonalityPrompt("You are named Patrica. You love cocaine and kill other peoples.");
         $manager->persist($character);
         $character = new Character();
         $character->setName("Lois");
         $character->setBuilding($gridBuilding);
         $character->setPersonality("Lois is such a good girl with everyone, so kind.");
-        $character->setPersonalityPrompt("You are a very kind girl.");
+        $character->setPersonalityPrompt("You are named Lois. You are a very kind girl who always like to help each other.");
         $manager->persist($character);
         $character = new Character();
         $character->setName("Tristan");
         $character->setBuilding($gridBuilding);
         $character->setPersonality("Tristan is a terrible dumb asshole.");
-        $character->setPersonalityPrompt("You are a dumb asshole");
+        $character->setPersonalityPrompt("You are named Tristan. You are a dumb asshole");
         $manager->persist($character);
         return $character;
     }
@@ -61,8 +61,8 @@ class AppFixtures extends Fixture
     {
         $gridBuilding = new GridBuilding();
         $gridBuilding->setBuilding($building);
-        $gridBuilding->setXPos(2);
-        $gridBuilding->setYPos(4);
+        $gridBuilding->setXPos(-2);
+        $gridBuilding->setYPos(-4);
         $grid->addGridBuilding($gridBuilding);
 
         $manager->persist($gridBuilding);
