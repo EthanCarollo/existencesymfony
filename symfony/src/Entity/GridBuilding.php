@@ -4,7 +4,10 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use App\Dto\GridBuildingInput;
 use App\Repository\GridBuildingRepository;
+use App\State\GridBuildingPostProcessor;
 use App\State\GridBuildingProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,7 +16,14 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: GridBuildingRepository::class)]
 #[ApiResource(operations: [
-    new GetCollection(provider: GridBuildingProvider::class)
+    new GetCollection(provider: GridBuildingProvider::class),
+    new Post(
+        denormalizationContext: [
+            'groups' => ['grid_building:write'],
+        ],
+        input: GridBuildingInput::class,
+        provider: GridBuildingPostProcessor::class
+    ),
 ])]
 class GridBuilding
 {

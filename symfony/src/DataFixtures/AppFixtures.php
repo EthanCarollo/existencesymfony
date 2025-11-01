@@ -77,9 +77,9 @@ class AppFixtures extends Fixture
         $building->setName("abandonned_house");
         $building->setImage("/images/abandonned_house.png");
         $building->setModel("/models/abandonned_house.glb");
-        $building->setHeight(3);
-        $building->setLength(2);
-        $building->setWidth(3);
+        $building->setHeight(2);
+        $building->setLength(3);
+        $building->setWidth(2);
 
         $manager->persist($building);
 
