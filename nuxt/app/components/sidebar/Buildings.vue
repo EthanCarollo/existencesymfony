@@ -76,6 +76,7 @@ const onDragMove = (event) => {
 const onDragEnd = (event) => {
     if (!dragging.value) return
     console.log('Drag ended:', currentBuilding.value)
+    scene.buildManager.build(event)
     scene.buildManager.resetSelectedObject()
     dragging.value = false
     currentBuilding.value = null

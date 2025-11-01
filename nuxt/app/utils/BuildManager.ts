@@ -58,13 +58,22 @@ export class BuildManager {
             this.scene.sceneContainer,
             this.cameraController.camera
         )
-        if(position === null) {
-            return;
-        }
+        if(position === null) { return; }
         this.targetPosition = new THREE.Vector3(
             position.x + this.modelLoader.getModelByKey(this.selectedObject).width / 2,
             -2,
             position.z + this.modelLoader.getModelByKey(this.selectedObject).length / 2,)
+    }
+
+    public build(event: MouseEvent): void {
+        console.warn("Launch build")
+        const position = this.gridManager.getMouseGridPosition(
+            event,
+            this.scene.sceneContainer,
+            this.cameraController.camera
+        )
+        if(position === null) { return; }
+        console.log(position)
     }
 
     public resetSelectedObject() {

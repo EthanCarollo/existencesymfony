@@ -35,7 +35,7 @@
                                 :key="message.id"
                             >
                                 <div
-                                    class="flex-shrink-0 max-w-96 bg-white/90 rounded-lg p-3 border border-gray-200 shadow-sm cursor-pointer hover:bg-white"
+                                    class="flex-shrink-0 max-w-96 bg-white/90 rounded-lg p-3 border border-gray-200 shadow-sm hover:bg-white"
                                 >
                                     <div class="flex-1 min-w-0">
                                         <div class="flex" :class="message.side === 'right' ? 'flex-row-reverse' : ''">
@@ -59,7 +59,7 @@
                     <div
                         :class="rightCharacter === null || leftCharacter === null ? 'hidden' : ''"
                         @click="continueConversationBetween"
-                        class="bg-white/80 py-2 px-4 cursor-pointer hover:bg-white rounded-lg flex items-center gap-2 transition-all"
+                        class="bg-white/80 py-2 px-4 cursor-pointer hover:bg-white rounded-lg flex items-center gap-2 transition-all hover:shadow-md"
                         :disabled="isLoading"
                     >
                         <div v-if="isLoading" class="animate-spin h-4 w-4 border-2 border-gray-900 border-t-transparent rounded-full"></div>
@@ -74,6 +74,7 @@
 <script setup>
 import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useCharactersStore } from "~/stores/characters.js";
+import { useGridStore } from "~/stores/grid.js";
 import { useAuth } from '~/composables/useAuth.js';
 import { useChat } from "~/composables/useChat.js";
 import { useNuxtApp } from '#app';
@@ -90,6 +91,7 @@ const selectCharacter = ref(false);
 const chatContainer = ref(null);
 
 const { fetchCharacters } = useCharactersStore();
+const { fetchGrid } = useGridStore();
 const allCharacters = ref([]);
 const { continueConversation } = useChat();
 
@@ -169,13 +171,13 @@ const continueConversationBetween = async () => {
 
     try {
         const message = await continueConversation(token.value, leftCharacter.value.id, rightCharacter.value.id);
+        await fetchGrid(token.value);
         if (message.response.senderId === rightCharacter.value.id) {
             rightCharacter.value.sendedChats.push(message.response);
         } else {
             leftCharacter.value.sendedChats.push(message.response);
         }
-        console.log(leftCharacter.value.sendedChats);
-        console.warn(message);
+
     } finally {
         isLoading.value = false;
     }
