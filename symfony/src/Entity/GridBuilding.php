@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
             'groups' => ['grid_building:write'],
         ],
         input: GridBuildingInput::class,
-        provider: GridBuildingPostProcessor::class
+        processor: GridBuildingPostProcessor::class
     ),
 ])]
 class GridBuilding

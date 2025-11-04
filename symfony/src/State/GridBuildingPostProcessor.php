@@ -5,6 +5,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Dto\GridBuildingInput;
 use App\Entity\GridBuilding;
+use App\Entity\User;
 use App\Repository\BuildingsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -22,7 +23,7 @@ final class GridBuildingPostProcessor implements ProcessorInterface
             throw new \InvalidArgumentException('Invalid input type.');
         }
 
-
+        /** @var User $user */
         $user = $this->security->getUser();
         if (!$user) {
             throw new \RuntimeException('Unauthenticated user.');
