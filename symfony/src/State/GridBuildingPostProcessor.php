@@ -17,31 +17,47 @@ final class GridBuildingPostProcessor implements ProcessorInterface
         private BuildingsRepository $buildingsRepository,
         private Security $security
     ) {}
+
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
     {
         if (!$data instanceof GridBuildingInput) {
             throw new \InvalidArgumentException('Invalid input type.');
         }
 
-        /** @var User $user */
         $user = $this->security->getUser();
-        if (!$user) {
+        if (!$user instanceof User) {
             throw new \RuntimeException('Unauthenticated user.');
         }
 
-        $gridBuilding = new GridBuilding();
-        $gridBuilding->setXPos($data->xPos);
-        $gridBuilding->setYPos($data->yPos);
-        $userGrid = $user->getGrid();
-        $gridBuilding->setGrid($userGrid);
-
-        if ($data->buildingId) {
-            $building = $this->buildingsRepository->find($data->buildingId);
-            if (!$building) {
-                throw new \RuntimeException("Building not found with ID {$data->buildingId}");
-            }
-            $gridBuilding->setBuilding($building);
+        $building = $data->buildingId ? $this->buildingsRepository->find($data->buildingId) : null;
+        if (!$building) {
+            throw new \RuntimeException("Building not found with ID {$data->buildingId}");
         }
+
+        $userGrid = $user->getGrid();
+        $existing = $userGrid->getGridBuildings();
+
+        $x = $data->xPos;
+        $y = $data->yPos;
+        $w = $building->getWidth();
+        $l = $building->getLength();
+
+        foreach ($existing as $gb) {
+            $ex = $gb->getXPos();
+            $ey = $gb->getYPos();
+            $ew = $gb->getBuilding()->getWidth();
+            $el = $gb->getBuilding()->getLength();
+
+            if ($x < $ex + $ew && $x + $w > $ex && $y < $ey + $el && $y + $l > $ey) {
+                throw new \RuntimeException('Building overlaps with an existing one.');
+            }
+        }
+
+        $gridBuilding = (new GridBuilding())
+            ->setXPos($x)
+            ->setYPos($y)
+            ->setBuilding($building)
+            ->setGrid($userGrid);
 
         $this->em->persist($gridBuilding);
         $this->em->flush();
