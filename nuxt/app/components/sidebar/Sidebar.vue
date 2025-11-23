@@ -30,10 +30,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import { LogOut, User, Building, Hammer } from 'lucide-vue-next'
+import { LogOut, User, Building, FileUser, Hammer } from 'lucide-vue-next'
 import { useAuth } from '~/composables/useAuth.js'
 const { logout } = useAuth()
-
 import Profile from "~/components/sidebar/Profile.vue";
 import BuildingList from "~/components/sidebar/Buildings.vue";
 import ConstructedBuildings from "~/components/sidebar/ConstructedBuildings.vue";
@@ -48,7 +47,7 @@ const handleLogout = () => {
 
 const navigationItems = [
     { id: 'buildings', icon: Hammer, callback: null, component: BuildingList },
-    { id: 'constructed_buildings', icon: Building, callback: null, component: ConstructedBuildings },
+    { id: 'characters', icon: FileUser, callback: null, component: ConstructedBuildings },
     { id: 'profile', icon: User, callback: null, component: Profile },
     { id: 'logout', icon: LogOut, callback: handleLogout, component: null },
 ]
