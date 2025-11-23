@@ -1,44 +1,29 @@
-FROM composer:2 AS composer_stage
+FROM dunglas/frankenphp:latest-php8.2
 
 WORKDIR /app
-
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 
 COPY . .
-RUN composer dump-autoload --optimize --classmap-authoritative
 
+RUN install-php-extensions \
+    pdo_mysql \
+    intl \
+    zip \
+    opcache \
+    gd
 
-FROM dunglas/frankenphp:1.1.0-php8.3
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /app
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-RUN apt-get update && apt-get install -y \
-    git unzip libicu-dev libzip-dev libpq-dev \
-    && docker-php-ext-install intl opcache zip pdo pdo_mysql pdo_pgsql \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p config/jwt && \
+    php bin/console lexik:jwt:generate-keypair --skip-if-exists || true
 
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+RUN chown -R www-data:www-data /app/var && \
+    chmod -R 755 /app/var
 
-COPY --from=composer_stage /app /app
-
-ENV APP_ENV=prod \
-    APP_DEBUG=0 \
-    PHP_OPCACHE_ENABLE=1
-
-RUN mkdir -p var/cache var/log config/jwt \
-    && chown -R www-data:www-data var \
-    && chmod -R 775 var
-
-RUN php bin/console cache:clear --env=prod --no-debug \
-    && php bin/console cache:warmup --env=prod --no-debug
-
-RUN echo 'root /app/public;' > /etc/frankenphp/conf.d/app.conf \
-    && echo 'encode gzip zstd;' >> /etc/frankenphp/conf.d/app.conf \
-    && echo 'php_server;' >> /etc/frankenphp/conf.d/app.conf
+ENV SERVER_NAME=:8080
+ENV FRANKENPHP_CONFIG="worker ./public/index.php"
 
 EXPOSE 8080
 
-USER www-data
-
-CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
