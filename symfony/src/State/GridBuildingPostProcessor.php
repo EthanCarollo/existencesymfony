@@ -32,7 +32,8 @@ final class GridBuildingPostProcessor implements ProcessorInterface
         $gridBuilding = new GridBuilding();
         $gridBuilding->setXPos($data->xPos);
         $gridBuilding->setYPos($data->yPos);
-        $gridBuilding->setGrid($user->getGrid());
+        $userGrid = $user->getGrid();
+        $gridBuilding->setGrid($userGrid);
 
         if ($data->buildingId) {
             $building = $this->buildingsRepository->find($data->buildingId);
