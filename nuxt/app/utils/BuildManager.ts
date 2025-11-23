@@ -30,27 +30,32 @@ export class BuildManager {
     public initializeDefaultObjects() {
         let gridBuildings: any[] = this.grid.gridBuildings
         gridBuildings.forEach((gridBuilding: any) => {
-            // Instantiate Object
             let model = this.modelLoader.getModelByKey(gridBuilding.building.model)
             let modelGLTFScene =  model.GLTF.scene.clone();
             this.scene.add(modelGLTFScene)
-            // Set Object position
             let newPos = this.gridManager.gridToWorld(gridBuilding.xPos, gridBuilding.yPos)
             modelGLTFScene.position.set((newPos.x + (model.width / 2) - 0.5), -2, newPos.z - 0.5 + model.length / 2)
-            // Add Object in object map
             let buildOnGrid = new BuildOnGrid(new THREE.Vector2(gridBuilding.xPos, gridBuilding.yPos), model, gridBuilding)
             this.objectOnGrid.push(buildOnGrid)
         })
     }
 
     public isBuildable(xPos: number, yPos: number): boolean {
-        // TODO : WIP
         return true;
     }
 
     public setSelectedObject(build: any, event: MouseEvent): void {
         this.selectedObject = build
         this.selectedModel = (this.modelLoader.getModelByKey(build.model).GLTF.scene).clone()
+
+        this.selectedModel.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.material = child.material.clone()
+                child.material.transparent = true
+                child.material.opacity = 0.5
+            }
+        })
+
         this.scene.scene.add(this.selectedModel)
         if(event === null) return;
         const position = this.gridManager.getMouseGridPosition(
@@ -76,12 +81,13 @@ export class BuildManager {
         if(!this.isBuildable(position.x, position.z)) return;
 
         const posX = position.x
-        const posY = position.z // Z is Y here
+        const posY = position.z
         const idBuilding = this.selectedObject.id
         const buildingData = { xPos: posX, yPos: posY, buildingId: idBuilding }
-        // TODO : Fetch api and put the things down
 
         try {
+            let model = this.modelLoader.getModelByKey(this.selectedObject.model)
+            
             const newGridBuilding = await $fetch(useRuntimeConfig().public.backUrl + '/api/grid_buildings', {
                 method: 'POST',
                 headers: {
@@ -92,7 +98,12 @@ export class BuildManager {
                 body: buildingData
             })
 
-            console.warn(newGridBuilding)
+            let modelGLTFScene = model.GLTF.scene.clone()
+            this.scene.scene.add(modelGLTFScene)
+            let newPos = this.gridManager.gridToWorld(posX, posY)
+            modelGLTFScene.position.set((newPos.x + (model.width / 2) - 0.5), -2, newPos.z - 0.5 + model.length / 2)
+            let buildOnGrid = new BuildOnGrid(new THREE.Vector2(posX, posY), model, newGridBuilding)
+            this.objectOnGrid.push(buildOnGrid)
 
             return { success: true, gridBuilding: newGridBuilding }
         } catch (error) {
