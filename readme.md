@@ -1,5 +1,7 @@
 # Projet Symfony – Simulation LLM - Existence
 
+> Notes : j'ai hosté un Ollama pour que cela puisse marcher même sans avoir de LLM en local.
+
 ## Objectifs pédagogiques
 
 * Explorer le bundle [Symfony AI](https://github.com/symfony/ai) et découvrir ses fonctionnalités.
@@ -130,3 +132,11 @@ symfony console d:m:m
 ## Ressources supplémentaires
 
 * [Exemple d’intégration Symfony AI](https://github.com/symfony/ai/blob/main/examples/lmstudio/chat.php)
+
+## Conclusion
+
+Ce projet m’a permis de découvrir les aspects positifs de Symfony. Malgré l’échec de ma tentative de créer un Docker Compose avec Franken PHP pour ensuite le déployer sur Coolify, je garde une perception légèrement positive d’API Platform. J’apprécie l’idée derrière cette techno et la manière dont elle simplifie certains processus de création d’API, mais je reste assez frustré. Honnêtement, je trouve Symfony peu agréable à utiliser sur plusieurs points : la documentation est insuffisante, le code complexe et la productivité limitée.
+
+J’ai aussi pu constater à quel point le développement avec Symfony AI peut être compliqué : l’outil est instable et mal documenté, ce qui transforme l’expérience en un vrai mauvais plaisir. En définitive, bien que certains concepts d’API Platform soient intéressants, je doute fortement de réutiliser Symfony pour un futur projet, en raison des problèmes que j’ai rencontrés personnellement avec cette techno.
+
+Je n'ai pas pu trop poussé certaines parties du projet dû à des complications de dev avec les différentes libs assez compliqués. (lib qui ne marche pas, mauvaise documentation)

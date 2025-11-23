@@ -1,75 +1,72 @@
-# Nuxt Minimal Starter
+# Existence - Nuxt
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Bienvenue dans **Existence**, l’application front-end développée avec Nuxt 3.  
+Ce guide vous explique comment installer, lancer et construire l’application **uniquement avec npm**.
 
-## Setup
+---
 
-Make sure to install dependencies:
+## Documentation
+
+Pour en savoir plus sur Nuxt et ses fonctionnalités :  
+[Nuxt Documentation](https://nuxt.com/docs/getting-started/introduction)
+
+---
+
+## 1. Installation
+
+Installez les dépendances du projet avec npm :
 
 ```bash
-# npm
 npm install
+````
 
-# pnpm
-pnpm install
+> Assurez-vous d’avoir Node.js et npm installés sur votre machine. (ou utilisez nvm)
 
-# yarn
-yarn install
+---
 
-# bun
-bun install
-```
+## 2. Lancer le serveur de développement
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Pour démarrer l’application en mode développement et la tester localement :
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+L’application sera accessible sur :
+[http://localhost:3000](http://localhost:3000)
 
-Build the application for production:
+Le mode développement permet le **rechargement automatique** à chaque modification.
+
+---
+
+## 3. Build pour la production
+
+Pour créer la version optimisée pour la production :
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+Puis pour **prévisualiser le build localement** :
 
 ```bash
-# npm
 npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+> Cette version correspondra exactement à ce qui sera déployé en production.
+
+---
+
+## 4. Déploiement
+
+Pour plus d’informations sur le déploiement de votre application Nuxt :
+[Nuxt Deployment Guide](https://nuxt.com/docs/getting-started/deployment)
+
+---
+
+## Notes
+
+* Utilisez **npm uniquement** pour toutes les commandes.
+* Le serveur de développement écoute par défaut sur le port 3000.
+* `npm run build` génère un dossier `.output` contenant le build prêt pour la production.
+

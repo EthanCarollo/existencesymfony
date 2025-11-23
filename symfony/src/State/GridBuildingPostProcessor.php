@@ -7,6 +7,7 @@ use App\Dto\GridBuildingInput;
 use App\Entity\GridBuilding;
 use App\Entity\User;
 use App\Repository\BuildingsRepository;
+use App\Repository\CharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -15,6 +16,7 @@ final class GridBuildingPostProcessor implements ProcessorInterface
     public function __construct(
         private EntityManagerInterface $em,
         private BuildingsRepository $buildingsRepository,
+        private CharacterRepository $characterRepository,
         private Security $security
     ) {}
 
@@ -58,6 +60,11 @@ final class GridBuildingPostProcessor implements ProcessorInterface
             ->setYPos($y)
             ->setBuilding($building)
             ->setGrid($userGrid);
+
+        $randomCharacter = $this->characterRepository->findRandom();
+        if ($randomCharacter) {
+            $gridBuilding->setCharacter($randomCharacter);
+        }
 
         $this->em->persist($gridBuilding);
         $this->em->flush();
