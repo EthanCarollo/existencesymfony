@@ -40,6 +40,8 @@
 		# Enable the subscription API (double-check that it's what you want)
 		subscriptions
 		# Extra directives
+		cors_origins *
+
 		{$MERCURE_EXTRA_DIRECTIVES}
 	}
 

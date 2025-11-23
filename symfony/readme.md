@@ -1,10 +1,14 @@
-## Launch dev
+# Lancement de l'application (développement)
+
+Pour lancer l'application en mode développement, utilisez la commande suivante :
 
 ```sh
 APP_ENV=dev symfony server:start
 ```
 
-## Test id
+## Identifiants de test
+
+Pour tester l'application côté front-end et profiter pleinement des fonctionnalités de discussion et autres, utilisez ces identifiants :
 
 ```json
 {
@@ -14,16 +18,24 @@ APP_ENV=dev symfony server:start
 }
 ```
 
-## Some useful commands
-Make migration
+> Ces identifiants vous permettent de vous connecter directement et de tester toutes les fonctionnalités sans restrictions.
+
+## Commandes utiles
+
+### Créer une migration
+
+```sh
+symfony console make:migration
 ```
-symfony console make:migration 
-```
-Launch migration
-```
+
+### Lancer une migration
+
+```sh
 symfony console d:m:m
 ```
 
-## This is incredible
+## Ressources supplémentaires
 
-https://github.com/symfony/ai/blob/main/examples/lmstudio/chat.php
+Pour voir un exemple d'intégration avec Symfony AI :
+[Exemple Chat Symfony AI](https://github.com/symfony/ai/blob/main/examples/lmstudio/chat.php)
+> L'exemple marche pas, la lib est encore trop peu stable...
