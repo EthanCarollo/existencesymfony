@@ -13,7 +13,6 @@ class CurrentCharacterProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        /** @var User $user */
         $user = $this->security->getUser();
 
         if (!$user) {

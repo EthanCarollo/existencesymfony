@@ -7,8 +7,13 @@ export const useBuildings = () => {
         return await buildingStore.fetchBuildings(token)
     }
 
+    const postGridBuilding = async (token, buildingData) => {
+        return await buildingStore.postGridBuilding(token, buildingData)
+    }
+
     return {
         fetchBuildings,
+        postGridBuilding,
         buildings: computed(() => buildingStore.buildings),
     }
 }

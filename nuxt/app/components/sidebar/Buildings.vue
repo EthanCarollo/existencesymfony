@@ -45,8 +45,12 @@
 
 <script setup>
 import { ref } from 'vue'
+import {useAuth} from "~/composables/useAuth.js";
 
 const { buildings } = useBuildings()
+
+const { token } = useAuth();
+
 let scene = Scene.getInstance()
 
 const dragging = ref(false)
@@ -60,7 +64,7 @@ const onDragStart = (building, event) => {
     dragging.value = true
     currentBuilding.value = building
     console.log('Drag started:', building)
-    scene.buildManager.setSelectedObject(building.model, event)
+    scene.buildManager.setSelectedObject(building, event)
 
     // Écoute globale pour détecter le relâché de la souris
     window.addEventListener('mousemove', onDragMove)
@@ -76,7 +80,7 @@ const onDragMove = (event) => {
 const onDragEnd = (event) => {
     if (!dragging.value) return
     console.log('Drag ended:', currentBuilding.value)
-    scene.buildManager.build(event)
+    scene.buildManager.build(event, token.value)
     scene.buildManager.resetSelectedObject()
     dragging.value = false
     currentBuilding.value = null

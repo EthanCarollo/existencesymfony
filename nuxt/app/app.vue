@@ -4,6 +4,10 @@
   </NuxtLayout>
 </template>
 
+<script setup>
+
+</script>
+
 <style>
 .page-enter-active,
 .page-leave-active {

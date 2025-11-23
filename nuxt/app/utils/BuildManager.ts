@@ -9,7 +9,7 @@ export class BuildManager {
     private mouse: THREE.Vector2
     private plane: THREE.Plane
     public selectedModel: THREE.Object3D | null = null
-    public selectedObject: string | null = null
+    public selectedObject: any | null = null
     private targetPosition: THREE.Vector3 | null = null
     public objectOnGrid: BuildOnGrid[] = [];
 
@@ -48,9 +48,9 @@ export class BuildManager {
         return true;
     }
 
-    public setSelectedObject(name: string, event: MouseEvent): void {
-        this.selectedObject = name
-        this.selectedModel = (this.modelLoader.getModelByKey(name).GLTF.scene).clone()
+    public setSelectedObject(build: any, event: MouseEvent): void {
+        this.selectedObject = build
+        this.selectedModel = (this.modelLoader.getModelByKey(build.model).GLTF.scene).clone()
         this.scene.scene.add(this.selectedModel)
         if(event === null) return;
         const position = this.gridManager.getMouseGridPosition(
@@ -60,12 +60,12 @@ export class BuildManager {
         )
         if(position === null) { return; }
         this.targetPosition = new THREE.Vector3(
-            position.x + this.modelLoader.getModelByKey(this.selectedObject).width / 2,
+            position.x + this.modelLoader.getModelByKey(this.selectedObject.model).width / 2,
             -2,
-            position.z + this.modelLoader.getModelByKey(this.selectedObject).length / 2,)
+            position.z + this.modelLoader.getModelByKey(this.selectedObject.model).length / 2,)
     }
 
-    public build(event: MouseEvent): void {
+    public async build(event: MouseEvent, token: any): Promise<any> {
         console.warn("Launch build")
         const position = this.gridManager.getMouseGridPosition(
             event,
@@ -73,7 +73,35 @@ export class BuildManager {
             this.cameraController.camera
         )
         if(position === null) { return; }
-        console.log(position)
+        if(!this.isBuildable(position.x, position.z)) return;
+
+        const posX = position.x
+        const posY = position.z // Z is Y here
+        const idBuilding = this.selectedObject.id
+        const buildingData = { xPos: posX, yPos: posY, buildingId: idBuilding }
+        // TODO : Fetch api and put the things down
+
+        try {
+            const newGridBuilding = await $fetch(useRuntimeConfig().public.backUrl + '/api/grid_buildings', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/ld+json',
+                    'Accept': 'application/ld+json'
+                },
+                body: buildingData
+            })
+
+            console.warn(newGridBuilding)
+
+            return { success: true, gridBuilding: newGridBuilding }
+        } catch (error) {
+            console.warn(error)
+            return {
+                success: false,
+                error: error.data?.message || 'Erreur lors de la création du GridBuilding'
+            }
+        }
     }
 
     public resetSelectedObject() {
@@ -91,9 +119,9 @@ export class BuildManager {
         )
         if (position) {
             this.targetPosition = new THREE.Vector3(
-                position.x + this.modelLoader.getModelByKey(this.selectedObject).width / 2,
+                position.x + this.modelLoader.getModelByKey(this.selectedObject.model).width / 2,
                 -2,
-                position.z + this.modelLoader.getModelByKey(this.selectedObject).length / 2,)
+                position.z + this.modelLoader.getModelByKey(this.selectedObject.model).length / 2,)
         }
     }
 
