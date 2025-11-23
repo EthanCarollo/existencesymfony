@@ -87,7 +87,7 @@ export class BuildManager {
 
         try {
             let model = this.modelLoader.getModelByKey(this.selectedObject.model)
-            
+
             const newGridBuilding = await $fetch(useRuntimeConfig().public.backUrl + '/api/grid_buildings', {
                 method: 'POST',
                 headers: {
