@@ -8,6 +8,7 @@ use App\Entity\Character;
 use App\Entity\Chat;
 use App\Repository\CharacterRepository;
 use App\Services\AI\AIChat;
+use App\Services\AI\OllamaAIChat;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,8 +21,8 @@ class ChatController extends AbstractController
     #[Route('/chat', name: 'chat', methods: ['POST'])]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        set_time_limit(240);
-        $aiChat = AIChat::getInstance();
+        set_time_limit(600);
+        $aiChat = OllamaAIChat::getInstance();
         $charRepository = $entityManager->getRepository(Character::class);
         $chatRepository = $entityManager->getRepository(Chat::class);
 
@@ -57,7 +58,8 @@ class ChatController extends AbstractController
             $sender,
             $receiver,
             $message,
-            "darkidol-llama-3.1-8b-instruct-1.2-uncensored-iq-imatrix-request",
+            "dagbs/darkidol-llama-3.1-8b-instruct-1.0-uncensored:latest",
+            //"llama2-uncensored",
             $allChats
         );
 

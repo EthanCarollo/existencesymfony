@@ -1,3 +1,9 @@
+## Launch dev
+
+```sh
+APP_ENV=dev symfony server:start
+```
+
 ## Test id
 
 ```json

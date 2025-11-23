@@ -1,29 +1,47 @@
-FROM dunglas/frankenphp:latest-php8.2
+FROM dunglas/frankenphp
+
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+ENV FRANKENPHP_PHP_OPCACHE_ENABLE=1
+ENV SERVER_NAME=:80
 
 WORKDIR /app
-
-COPY . .
 
 RUN install-php-extensions \
     pdo_mysql \
     intl \
     zip \
-    opcache \
-    gd
+    @composer \
+    apcu \
+    opcache
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY composer.json composer.lock symfony.lock ./
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 
-RUN mkdir -p config/jwt && \
-    php bin/console lexik:jwt:generate-keypair --skip-if-exists || true
+COPY . .
 
-RUN chown -R www-data:www-data /app/var && \
-    chmod -R 755 /app/var
+RUN composer dump-autoload --optimize --classmap-authoritative && \
+    composer run-script --no-dev post-install-cmd
 
-ENV SERVER_NAME=:8080
-ENV FRANKENPHP_CONFIG="worker ./public/index.php"
+RUN mkdir -p var/cache var/log && \
+    chown -R www-data:www-data var && \
+    chmod -R 775 var
 
-EXPOSE 8080
+RUN php bin/console cache:clear --no-warmup && \
+    php bin/console cache:warmup
 
-CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
+RUN chown -R www-data:www-data /app
+
+COPY <<EOF /etc/frankenphp/Caddyfile
+{
+    auto_https off
+}
+
+:80 {
+    root * /app/public
+    php_server
+}
+EOF
+
+EXPOSE 80

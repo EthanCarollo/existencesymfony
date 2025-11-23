@@ -176,6 +176,7 @@
       <path value="$PROJECT_DIR$/vendor/api-platform/json-schema" />
       <path value="$PROJECT_DIR$/vendor/api-platform/hydra" />
       <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock" />
+      <path value="$PROJECT_DIR$/vendor/runtime/frankenphp-symfony" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2">

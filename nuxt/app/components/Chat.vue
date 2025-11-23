@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <div class="relative h-[75%] overflow-hidden">
-                    <div ref="chatContainer" class="flex flex-col w-[calc(100%+29px)] pr-4 gap-2 mt-2 overflow-y-scroll h-full">
+                    <div ref="chatContainer" class="flex flex-col w-[calc(100%+29px)]  pr-4 gap-2 mt-2 overflow-y-scroll h-full">
                         <TransitionGroup name="message-slide">
                             <div
                                 class="flex"
@@ -68,11 +68,40 @@
                 </div>
             </div>
         </Transition>
+
+        <Transition name="fade">
+            <div v-if="isLoading" class="fixed inset-0 bg-black/60 backdrop-blur-sm my-4 rounded-3xl z-50 flex items-center justify-center">
+                <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="animate-spin h-12 w-12 border-4 border-gray-900 border-t-transparent rounded-full"></div>
+                        <h3 class="text-xl font-bold text-gray-900">Generating conversation...</h3>
+                        <p class="text-sm text-gray-600 text-center">This can take 3-4 minutes if the conversation is too big</p>
+
+                        <div class="mt-4 w-full min-h-24 flex items-center justify-center">
+                            <Transition name="joke-fade" mode="out-in">
+                                <div :key="currentJokeIndex" class="text-center px-4">
+                                    <p class="text-base text-gray-700 italic">{{ jokes[currentJokeIndex] }}</p>
+                                </div>
+                            </Transition>
+                        </div>
+
+                        <div class="flex gap-1 mt-2">
+                            <div
+                                v-for="(joke, index) in jokes"
+                                :key="index"
+                                class="h-1.5 w-1.5 rounded-full transition-all duration-300"
+                                :class="index === currentJokeIndex ? 'bg-gray-900 w-6' : 'bg-gray-300'"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Transition>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, nextTick } from 'vue';
+import { ref, onMounted, computed, watch, nextTick, onUnmounted } from 'vue';
 import { useCharactersStore } from "~/stores/characters.js";
 import { useGridStore } from "~/stores/grid.js";
 import { useAuth } from '~/composables/useAuth.js';
@@ -89,6 +118,21 @@ const leftCharacter = ref(null);
 const rightCharacter = ref(null);
 const selectCharacter = ref(false);
 const chatContainer = ref(null);
+const currentJokeIndex = ref(0);
+let jokeInterval = null;
+
+const jokes = [
+    "Why don't scientists trust atoms? Because they make up everything!",
+    "What do you call a bear with no teeth? A gummy bear!",
+    "Why did the scarecrow win an award? He was outstanding in his field!",
+    "What do you call a fake noodle? An impasta!",
+    "Why don't eggs tell jokes? They'd crack each other up!",
+    "What did the ocean say to the beach? Nothing, it just waved!",
+    "Why did the bicycle fall over? It was two-tired!",
+    "What do you call cheese that isn't yours? Nacho cheese!",
+    "Why couldn't the leopard play hide and seek? Because he was always spotted!",
+    "What did one wall say to the other? I'll meet you at the corner!"
+];
 
 const { fetchCharacters } = useCharactersStore();
 const { fetchGrid } = useGridStore();
@@ -133,9 +177,31 @@ const scrollToBottom = () => {
     }
 };
 
+const startJokeRotation = () => {
+    currentJokeIndex.value = 0;
+    jokeInterval = setInterval(() => {
+        currentJokeIndex.value = (currentJokeIndex.value + 1) % jokes.length;
+    }, 5000);
+};
+
+const stopJokeRotation = () => {
+    if (jokeInterval) {
+        clearInterval(jokeInterval);
+        jokeInterval = null;
+    }
+};
+
 watch(allChats, () => {
     scrollToBottom();
 }, { deep: true });
+
+watch(isLoading, (newVal) => {
+    if (newVal) {
+        startJokeRotation();
+    } else {
+        stopJokeRotation();
+    }
+});
 
 const activeSelectCharacter = () => {
     selectCharacter.value = !selectCharacter.value;
@@ -163,6 +229,10 @@ onMounted(async () => {
     allCharacters.value = characters.characters;
 });
 
+onUnmounted(() => {
+    stopJokeRotation();
+});
+
 const continueConversationBetween = async () => {
     if (isLoading.value) return;
 
@@ -187,7 +257,7 @@ const continueConversationBetween = async () => {
 <style scoped>
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Edge */
+    display: none;
 }
 
 button {
@@ -241,5 +311,31 @@ button {
 
 .message-slide-move {
     transition: transform 0.4s ease;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+}
+
+.joke-fade-enter-active {
+    transition: all 0.6s ease;
+}
+
+.joke-fade-leave-active {
+    transition: all 0.6s ease;
+}
+
+.joke-fade-enter-from {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.joke-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
 }
 </style>

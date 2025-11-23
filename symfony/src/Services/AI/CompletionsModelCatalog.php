@@ -18,7 +18,7 @@ class CompletionsModelCatalog extends AbstractModelCatalog
     {
         $parsed = self::parseModelName($modelName);
 
-        return new \Symfony\AI\Platform\Bridge\LmStudio\Completions(
+        return new \Symfony\AI\Platform\Bridge\Ollama\Ollama(
             $parsed['name'],
             Capability::cases(),
             $parsed['options']
