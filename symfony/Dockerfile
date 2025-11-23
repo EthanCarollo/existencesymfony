@@ -41,9 +41,6 @@ RUN set -eux; \
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Transport to use by Mercure (default to Bolt)
-ENV MERCURE_TRANSPORT_URL=bolt:///data/mercure.db
-
 ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 
 ###> recipes ###
@@ -88,7 +85,7 @@ COPY --link frankenphp/conf.d/20-app.prod.ini $PHP_INI_DIR/app.conf.d/
 # prevent the reinstallation of vendors at every changes in the source code
 COPY --link composer.* symfony.* ./
 RUN set -eux; \
-	composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+	composer install --no-cache --no-dev
 
 # copy sources
 COPY --link --exclude=frankenphp/ . ./
